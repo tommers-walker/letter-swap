@@ -1,0 +1,10 @@
+{
+  "name": "new-letter-swap",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "dependencies": {
+    "blendid": "https://github.com/tommers-walker/blendid",
+    "gsap": "^2.0.2"
+  }
+}

@@ -1,0 +1,24 @@
+{#
+  Nunjucks Templating!
+  Homepage: https://mozilla.github.io/nunjucks/
+  Docs: https://mozilla.github.io/nunjucks/api.html
+#}
+
+{% extends 'layouts/application.html' %}
+
+{% block content %}
+  <div class="container lines">
+    {% for line in lines %}
+      <p class="line js-line">
+        {% set chars = line|list %}
+        {%- for char in chars -%}
+          {%- if char == " " -%}
+            <span class="line__space">{{ char }}</span>
+          {%- else -%}
+            <span class="line__letter js-letter" data-letter="{{ char }}">{{ char }}</span>
+          {%- endif -%}
+        {%- endfor -%}
+      </p>
+    {% endfor %}
+  </div>
+{% endblock %}
