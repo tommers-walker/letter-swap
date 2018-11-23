@@ -57,9 +57,6 @@ const animation = () => {
     nextLineElementsCopy.splice(index, 1);
   });
 
-  console.log(currentLineElements);
-  console.log(currentLineElementsCopy);
-
   const tl = new TimelineLite();
   tl
   .to(currentLineElements, 0.5, {
