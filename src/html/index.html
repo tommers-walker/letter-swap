@@ -8,7 +8,7 @@
 
 {% block content %}
   <div class="container lines">
-    {% for line in lines %}
+    {%- for line in lines -%}
       <p class="line js-line">
         {% set chars = line|list %}
         {%- for char in chars -%}
@@ -19,6 +19,6 @@
           {%- endif -%}
         {%- endfor -%}
       </p>
-    {% endfor %}
+    {%- endfor -%}
   </div>
 {% endblock %}

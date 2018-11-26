@@ -1,14 +1,18 @@
-import { utils } from './utils';
 import 'gsap';
 import 'lodash';
 
 const lines = Array.from(document.querySelectorAll('.js-line'));
 
 let lineIndex = 0;
+let duration;
+
+// https://stackoverflow.com/questions/37434108/how-can-i-get-arrays-intersection-include-duplicate-values-using-javascript
+const intersectwith = (f,xs,ys) => xs.filter(x => ys.some(y => f(x,y)));
+const equals = (x,y) => x.letter === y.letter;
 
 const animation = () => {
   const currentLineElements = Array.from(lines[lineIndex].getElementsByClassName('js-letter'));
-  const nextLineElements = Array.from(lines[lineIndex+1].getElementsByClassName('js-letter'));
+  const nextLineElements = Array.from(lines[lineIndex + 1].getElementsByClassName('js-letter'));
 
   const currentLineLetters = currentLineElements.map(function(el) {
     const newObj = {
@@ -26,9 +30,6 @@ const animation = () => {
     return newObj;
   });
 
-  // https://stackoverflow.com/questions/37434108/how-can-i-get-arrays-intersection-include-duplicate-values-using-javascript
-  const intersectwith = (f,xs,ys) => xs.filter(x => ys.some(y => f(x,y)));
-  const equals = (x,y) => x.letter === y.letter;
   const matchingLetters = (intersectwith(equals, currentLineLetters, nextLineLetters));
   const lettersToKeep = [];
   const currentLineElementsCopy = _.cloneDeep(currentLineElements);
@@ -57,34 +58,48 @@ const animation = () => {
     nextLineElementsCopy.splice(index, 1);
   });
 
-  const tl = new TimelineLite();
+  if (lineIndex == 0) {
+    duration = 0.5;
+  } else {
+    duration = 0;
+  }
+
+  const tl = new TimelineMax();
   tl
-  .to(currentLineElements, 0.5, {
+  .to(currentLineElements, duration, {
     opacity: 1
   })
   .to(currentLineElementsCopy, 0.5, {
     opacity: 0
   }, "+=0.5")
-  .to(nextLineElements, 0.5, {
-    opacity: 1
-  }, "+=0.5")
   .to(lettersToKeep, 0.5, {
-    opacity: 0
-  }, "+=0.5")
-
-  TweenLite.delayedCall(1, function() {
-    lettersToKeep.forEach(function(el, i) {
-      TweenLite.to(el, 0.5, {x: el.newPosX})
-    })
+    x: function(index, el) {
+      return el.newPosX
+    }
   })
+  .to(nextLineElementsCopy, 0.5, {
+    opacity: 1
+  }, "-=0.25")
+  .call(function() {
+    lineIndex++
 
-  lineIndex++
-
-  if (lineIndex < lines.length -1) {
-    setTimeout(() => {
-      animation();
-    }, 2000);
-  }
+    if (lineIndex < lines.length -1) {
+      tl
+      .set([nextLineElementsCopy, lettersToKeep], {
+        opacity: 0
+      }, "+=0.5")
+      .call(animation)
+    } else {
+      tl
+      .to([nextLineElementsCopy, lettersToKeep], 0.5, {opacity: 0, delay: 0.5})
+      .call(function() {
+        tl
+        .set('.js-letter', {clearProps: 'all'})
+        lineIndex = 0;
+        animation();
+      })
+    }
+  })
 }
 
 const letters = {
